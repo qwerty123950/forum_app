@@ -3,7 +3,7 @@ from .forms import BoardForm, NewTopicForm
 from .serializers import BoardSerializer, TopicSerializer, PostSerializer
 from .pagination import BoardPagination
 from django.contrib.auth.models import User 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.views import APIView
@@ -18,10 +18,14 @@ from rest_framework.generics import ( ListAPIView, CreateAPIView,
                                      RetrieveUpdateDestroyAPIView )
 import json
 
-
+'''
 def home(request):
     board = Board.objects.all()
     return render(request, 'home.html', {'boards':board})
+    '''
+
+def home(request):
+    return HttpResponse("✅ Home is working!")
 
 def create_board(request):
     if request.method == 'POST':
