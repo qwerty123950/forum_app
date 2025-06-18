@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-6d7^wwqbt(kcmm*a9mhox2_l$cwg7a*x$j^_a0ydc(e=)6dbbg
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # Set your actual domain in production
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = ['forum-app-frrc.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -75,8 +75,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

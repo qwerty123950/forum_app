@@ -13,5 +13,5 @@ urlpatterns = [
     path('boards/vote/', views.update_vote, name='update_vote'),
     path('boards/<int:board_id>/new/success', views.topic_success, name='topic_success'),
     path('api-auth/', include('rest_framework.urls')),
-    path('', include('boards.urls')),
+    path('boards/', include('boards.urls')),
 ]
