@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New Board</title>
+    <style>
+        body {
+            background-color: #e0fd41; 
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        div {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #bad147;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Create New Board</h2>
+        <form id="board-form">
+            {% csrf_token  %}
+            <input type="text" name="name" placeholder="Board Name" required><br><br>
+            <input type="text" name="description" placeholder="Description" required><br><br>
+            <button type="submit">Create Board</button>
+        </form>
+    </div>    
+    <div id="response-message"></div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length +1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.getElementById('board-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const csrftoken = getCookie('csrftoken');
+        const form = e.target;
+        const data = {
+            name: form.name.value,
+            description: form.description.value,
+        };
+
+        try {
+            const response = await fetch('/api/boards/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+            document.getElementById('response-message').innerText = "✅ Board created!";
+            form.reset();
+            } else {
+            document.getElementById('response-message').innerText = "❌ Error: " + JSON.stringify(result);
+            }
+
+        } catch (error) {
+            document.getElementById('response-message').innerText = "❌ Network error.";
+        }
+        });
+    </script>
+
+</body>
+</html>

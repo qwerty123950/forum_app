@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boards</title>
+        <style>
+            #pagination {
+                text-align: right;
+                margin-bottom: 10px;
+            }
+            #pagination a, #pagination span {
+                padding: 5px 10px;
+                margin: 0 2px;
+                text-decoration: none;
+                border: 1px solid #ddd;
+                color: #333;
+            }
+                #pagination span.current {
+                font-weight: bold;
+                background-color: #007BFF;
+                color: white;
+            }
+             
+            body {
+            background-color: #e0fd41; 
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        div {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #bad147;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        </style>
+</head>
+<body>
+    <h1>Board List</h1>
+
+    <div id="pagination">
+        {% if boards.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ boards.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% for num in boards.paginator.page_range %}
+            {% if boards.number == num %}
+                <span class="current">{{ num }}</span>
+            {% elif num > boards.number|add:'-3' and num < boards.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if boards.has_next %}
+            <a href="?page={{ boards.next_page_number }}">Next</a>
+            <a href="?page={{ boards.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </div>
+
+    <ul>
+        {% for board in boards %}
+            <li><strong>{{ board.name }}</strong>: {{ board.description }}</li>
+        {% empty %}
+            <li>No boards available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
