@@ -1,5 +1,5 @@
 """
-WSGI config for todoapp project.
+WSGI config for forum project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
