@@ -18,14 +18,17 @@ from rest_framework.generics import ( ListAPIView, CreateAPIView,
                                      RetrieveUpdateDestroyAPIView )
 import json
 
-'''
-def home(request):
-    board = Board.objects.all()
-    return render(request, 'home.html', {'boards':board})
-    '''
 
 def home(request):
-    return HttpResponse("✅ Home is working!")
+    try:
+        boards = Board.objects.all()
+        return render(request, 'home.html', {'boards': boards})
+    except Exception as e:
+        from django.http import HttpResponse
+        return HttpResponse(f"❌ Error: {str(e)}")
+
+    
+
 
 def create_board(request):
     if request.method == 'POST':
