@@ -1,0 +1,134 @@
+body {
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    color: #333;
+}
+
+h1, h2 {
+    color: #2c3e50;
+}
+
+a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container,
+div {
+    background-color: #ffffff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.topic-row {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 5px;
+}
+
+.content {
+    flex: 1;
+}
+
+.votes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.vote-btn {
+    background: #5185bd;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.vote-count {
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.post-card {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #f2f2f2;
+    border-left: 4px solid #3498db;
+    border-radius: 3px;
+}
+
+.page-box {
+    display: inline-block;
+    margin: 4px;
+    padding: 6px 12px;
+    border: 1px solid #999;
+    border-radius: 4px;
+    color: #333;
+    background-color: #f7f7f7;
+}
+
+.page-box:hover {
+    background-color: #d0e7ff;
+}
+
+.page-box.current {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+}
+
+.search-form {
+    margin-bottom: 20px;
+}
+
+#response-message {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.clickable-div {
+    cursor: pointer;
+}
+.clickable-div {
+    cursor: pointer;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.clickable-div:hover {
+    background-color: #f0f8ff;
+}
