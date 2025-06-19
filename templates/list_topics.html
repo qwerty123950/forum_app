@@ -1,160 +1,103 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Topic</title>
-    <style>
-        body {
-            background-color: #e0fd41; 
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        .post {
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .topic-row{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            padding: 10px 0;
-        }
-
-        .content {
-            flex-grow: 1;
-        }
-
-        .votes {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .votes button {
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            background: none;
-        }
-
-        .votes span {
-            font-weight: bold;
-        }
-
-        .votes button.upvote:hover {
-            color: green;
-        }
-
-        .votes button.downvote:hover {
-            color: red;
-        }
-    </style>
+    <title>List Topics</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-    <body>
-        <div class="post">
-            <h2>The topics present in the board</h2>
+<body>
+    <div class="container">
+        <h2>The topics present in the board</h2>
 
-            <form method="get" action="">
-                <input type="text" name="q" placeholder="Search topics..." value="{{ query }}">
-                <button type="submit">Search</button>
-            </form>
+        <form method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search topics..." value="{{ query }}">
+            <button type="submit">Search</button>
+        </form>
 
-            {% for topic in topics %}
+        {% for topic in topics %}
             <div class="topic-row" data-topic-id="{{ topic.id }}">
-                    <div class="content">
-                        <strong>{{ topic.subject }}</strong> — {{ topic.last_updated|date:"M d, Y H:i" }}
-                        <div style="margin-top: 10px; padding-left: 10px;">
-                            {% for post in topic.posts.all %}
-                                <div style="margin-bottom: 8px; border-left: 2px solid #ccc; padding-left: 8px;">
-                                    <small>{{ post.created_by.username }}:</small> {{ post.message}}
-                                </div>
-                            {%  empty %}
-                                <div>No posts yet.</div>
-                            {%  endfor %}
-                        </div>
+                <div class="content">
+                    <strong>{{ topic.subject }}</strong>
+                    <small class="date">{{ topic.last_updated|date:"M d, Y H:i" }}</small>
+                    <div class="posts">
+                        {% for post in topic.posts.all %}
+                            <div class="post-card">
+                                <small class="author">{{ post.created_by.username }}:</small>
+                                {{ post.message }}
+                            </div>
+                        {% empty %}
+                            <div class="post-card">No posts yet.</div>
+                        {% endfor %}
                     </div>
-                    <div class="votes">
-                        <button class="upvote">&#9650;</button>
-                        <span class="vote-count">{{topic.vote_count}}</span>
-                        <button class="downvote">&#9660;</button>
-                    </div>
+                </div>
+                <div class="votes">
+                    <button class="vote-btn upvote">&#9650;</button>
+                    <span class="vote-count">{{ topic.vote_count }}</span>
+                    <button class="vote-btn downvote">&#9660;</button>
+                </div>
             </div>
-            {% empty %}
-            <div>No topics yet.</div>
-            {% endfor %}
-        </div>
+        {% empty %}
+            <div class="no-data">No topics yet.</div>
+        {% endfor %}
+    </div>
 
-        <script>
-            document.querySelectorAll('.topic-row').forEach(function(row) {
-                const upBtn = row.querySelector('.upvote');
-                const downBtn = row.querySelector('.downvote');
-                const countSpan = row.querySelector('.vote-count');
-                const topicId = row.dataset.topicId;
+    <script>
+        document.querySelectorAll('.topic-row').forEach(function(row) {
+            const upBtn = row.querySelector('.upvote');
+            const downBtn = row.querySelector('.downvote');
+            const countSpan = row.querySelector('.vote-count');
+            const topicId = row.dataset.topicId;
 
-                function getCookie(name) {
-                    let cookieValue = null;
-                    if(document.cookie && document.cookie != '') {
-                        const cookies = document.cookie.split(';');
-                        for(let i=0; i<cookies.length; i++) {
-                            const cookie = cookies[i].trim();
-                            if(cookie.substring(0, name.length + 1) === (name + '=')) {
-                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                break;
-                            }
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let cookie of cookies) {
+                        cookie = cookie.trim();
+                        if (cookie.startsWith(name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                            break;
                         }
                     }
-                    return cookieValue;
                 }
-                
-                function sendVote(action) {
-                    console.log("Sending vote for topic_id:", topicId, "action:", action);
-                    fetch('{% url "update_vote" %}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken')
-                        },
-                        body: JSON.stringify({
-                            topic_id: topicId,
-                            action: action
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            countSpan.textContent = data.new_count;
-                        } else {
-                            alert('Vote failed:' + data.error);
-                        }
-                        
-                    })
-                    .catch(err => console.error("Error sending vote:", err))
-                }
+                return cookieValue;
+            }
 
-                upBtn.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    console.log("Upvote clicked for topic:", topicId);
-                    sendVote('upvote');
-                });
+            function sendVote(action) {
+                fetch('{% url "update_vote" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        topic_id: topicId,
+                        action: action
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        countSpan.textContent = data.new_count;
+                    } else {
+                        alert('Vote failed: ' + data.error);
+                    }
+                })
+                .catch(err => console.error("Vote error:", err));
+            }
 
-                downBtn.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    console.log("Downvote clicked for topic:", topicId);
-                    sendVote('downvote');
-                });
+            upBtn.addEventListener('click', e => {
+                e.preventDefault();
+                sendVote('upvote');
             });
-         </script>
-    </body>
+
+            downBtn.addEventListener('click', e => {
+                e.preventDefault();
+                sendVote('downvote');
+            });
+        });
+    </script>
+</body>
 </html>
-
-

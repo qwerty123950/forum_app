@@ -7,10 +7,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6d7^wwqbt(kcmm*a9mhox2_l$cwg7a*x$j^_a0ydc(e=)6dbbg'
 
 # Use environment variable for DEBUG in production
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = True
 
 # Set your actual domain in production
-ALLOWED_HOSTS = ['forum-app-frrc.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -77,6 +77,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
@@ -101,17 +102,3 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'stream': sys.stdout,
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}

@@ -1,44 +1,15 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Topic Create</title>
-    <style>
-        body {
-            background-color: #e0fd41; 
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #0066cc;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-       div {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #bad147;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
+    <title>New Topic</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <div>
+    <div class="container">
         <h2>New Topic in "{{ board.name }}"</h2>
-
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}

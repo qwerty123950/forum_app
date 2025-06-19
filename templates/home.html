@@ -1,56 +1,49 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boards</title>
-    <style>
-        body {
-            background-color: #e0fd41; 
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #0066cc;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        div {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
+    <title>Forum Home</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <h1>Forum Home Page</h1>
 
     {% for board in boards %}
-        <div>
-            <div class="clickable-div" onclick=window.location.href="{% url 'list_topics' board.id%}" style="cursor: pointer;">
+        <div class="container">
+            <div class="clickable-div" onclick="window.location.href='{% url 'list_topics' board.id %}'">
                 <strong>{{ board.name }}</strong><br>
-                {{ board.description }}<br>
+                {{ board.description }}
             </div>
-            <div>
+            <div class="action-link">
                 <a href="{% url 'new_topic' board.id %}">Create new topic</a>
             </div>
         </div>
     {% endfor %}
 
-   <div> <a href="/create/">Create new board</a></div>
+    <div class="container">
+        <a href="/create/" class="action-link">Create new board</a>
+    </div>
+
+    <div id="pagination">
+        {% if boards.has_previous %}
+            <a href="?page=1" class="page-box">&laquo; First</a>
+            <a href="?page={{ boards.previous_page_number }}" class="page-box">Previous</a>
+        {% endif %}
+
+        {% for num in boards.paginator.page_range %}
+            {% if boards.number == num %}
+                <span class="page-box current">{{ num }}</span>
+            {% elif num > boards.number|add:-3 and num < boards.number|add:3 %}
+                <a href="?page={{ num }}" class="page-box">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if boards.has_next %}
+            <a href="?page={{ boards.next_page_number }}" class="page-box">Next</a>
+            <a href="?page={{ boards.paginator.num_pages }}" class="page-box">Last &raquo;</a>
+        {% endif %}
+    </div>
 </body>
 </html>
-

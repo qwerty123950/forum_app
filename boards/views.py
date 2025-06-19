@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets, status, permissions
@@ -21,13 +22,13 @@ import json
 
 def home(request):
     try:
-        boards = Board.objects.all()
-        return render(request, 'home.html', {'boards': boards})
+        boards = Board.objects.all().order_by('id')
+        paginator = Paginator(boards, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        return render(request, 'home.html', {'boards': page_obj})
     except Exception as e:
-        from django.http import HttpResponse
         return HttpResponse(f"❌ Error: {str(e)}")
-
-    
 
 
 def create_board(request):
