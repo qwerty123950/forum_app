@@ -1,11 +1,15 @@
 from django.contrib import admin
 from django.urls import path,include
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import LogoutView
 from boards import views
 
 
 urlpatterns = [
     path('', views.home, name='home'),
     path('admin/', admin.site.urls),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', views.custom_logout, name='logout'), 
     path('boards/create/', views.create_board, name='create_board'),
     path('success/', views.board_success, name='board_success'),
     path('boards/<int:board_id>/new/', views.new_topic, name='new_topic'),

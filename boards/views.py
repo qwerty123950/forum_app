@@ -2,7 +2,9 @@ from .models import Board, Topic, Post
 from .forms import BoardForm, NewTopicForm
 from .serializers import BoardSerializer, TopicSerializer, PostSerializer
 from .pagination import BoardPagination
+from django.contrib.auth import logout
 from django.contrib.auth.models import User 
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
@@ -19,17 +21,17 @@ from rest_framework.generics import ( ListAPIView, CreateAPIView,
                                      RetrieveUpdateDestroyAPIView )
 import json
 
-
+@login_required
 def home(request):
-    try:
-        boards = Board.objects.all().order_by('id')
-        paginator = Paginator(boards, 10)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-        return render(request, 'home.html', {'boards': page_obj})
-    except Exception as e:
-        return HttpResponse(f"❌ Error: {str(e)}")
+    boards = Board.objects.all().order_by('id')
+    paginator = Paginator(boards, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'home.html', {'boards': page_obj})
 
+def custom_logout(request):
+    logout(request)
+    return redirect('login')  
 
 def create_board(request):
     if request.method == 'POST':

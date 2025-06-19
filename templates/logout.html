@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Are you sure you want to logout?</h2>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Yes, log me out</button>
+        </form>
+        <a href="/">Cancel</a>
+    </div>
+</body>
+</html>
