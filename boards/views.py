@@ -23,11 +23,18 @@ import json
 
 @login_required
 def home(request):
-    boards = Board.objects.all().order_by('id')
+    boards = Board.objects.filter(is_deleted=False).order_by('id')
     paginator = Paginator(boards, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'home.html', {'boards': page_obj})
+
+def home_table(request):
+    board_list = Board.objects.filter(is_deleted=False).order_by('id')  
+    paginator = Paginator(board_list, 10)
+    page = request.GET.get('page')
+    boards = paginator.get_page(page)
+    return render(request, 'home_table.html', {'boards': boards})
 
 def custom_logout(request):
     logout(request)
@@ -42,6 +49,12 @@ def create_board(request):
     else:
         form = BoardForm()
     return render(request, 'create_board.html', {'form': form})
+
+def delete_board(request, board_id):
+    board = get_object_or_404(Board, pk=board_id)
+    board.is_deleted = True
+    board.save()
+    return redirect('home_table')
 
 def board_success(request):
     return render(request, 'success.html')
