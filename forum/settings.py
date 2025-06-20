@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6d7^wwqbt(kcmm*a9mhox2_l$cwg7a*x$j^_a0ydc(e=)6dbbg'
 
 # Use environment variable for DEBUG in production
-DEBUG = True
+DEBUG = False
 
 # Set your actual domain in production
 ALLOWED_HOSTS = ['*']
