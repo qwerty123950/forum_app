@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Long String Submit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background-color: #f5f5f5;
+        }
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+        button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+        #response-message {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <form id="string-form">
+        {% csrf_token %}
+        <textarea name="content" rows="5" cols="40" placeholder="Enter your long string here..." required></textarea>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response-message"></div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.getElementById('string-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const csrftoken = getCookie('csrftoken');
+            const data = {
+                content: form.content.value
+            };
+
+            try {
+                const response = await fetch('{% url "handle_long_string" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(data)
+                    credentials: 'same-origin'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    window.location.href = `/view/${result.unique_id}/`; 
+                } else {
+                    document.getElementById('response-message').innerText = "❌ Error: " + (result.detail || "Unknown error");
+                }
+            } catch (error) {
+                document.getElementById('response-message').innerText = "❌ Network error.";
+            }
+        });
+    </script>
+</body>
+</html>

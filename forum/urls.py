@@ -19,6 +19,8 @@ urlpatterns = [
     path('topics/<int:topic_id>/', views.topic_detail, name='topic_detail'),
     path('boards/vote/', views.update_vote, name='update_vote'),
     path('boards/<int:board_id>/new/success', views.topic_success, name='topic_success'),
+    path('submit/', views.handle_long_string, name='handle_long_string'),
+    path('view/<str:unique_id>/', views.view_by_id, name='view_by_id'),
     path('api-auth/', include('rest_framework.urls')),
     path('forum/', include('boards.urls')),
 ]

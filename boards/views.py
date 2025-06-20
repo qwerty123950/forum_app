@@ -1,11 +1,11 @@
-from .models import Board, Topic, Post
+from .models import Board, Topic, Post, LongString
 from .forms import BoardForm, NewTopicForm
 from .serializers import BoardSerializer, TopicSerializer, PostSerializer
 from .pagination import BoardPagination
 from django.contrib.auth import logout
 from django.contrib.auth.models import User 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
@@ -21,6 +21,32 @@ from rest_framework.generics import ( ListAPIView, CreateAPIView,
                                      UpdateAPIView, ListCreateAPIView, 
                                      RetrieveUpdateDestroyAPIView )
 import json
+
+@csrf_exempt 
+def handle_long_string(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            content = data.get('content')
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON")
+
+        if not content:
+            return HttpResponseBadRequest("Missing content")
+
+        obj, created = LongString.objects.get_or_create(content=content)
+
+        return JsonResponse({'unique_id': obj.unique_id, 'created': created})
+
+    return HttpResponseBadRequest("Only POST allowed")
+
+def view_by_id(request, unique_id):
+    obj = get_object_or_404(LongString, unique_id=unique_id)
+    return render(request, 'view_string.html', {'content': obj.content})
+
+def string_form(request):
+    return render(request, 'submit_form.html')
+
 
 @login_required
 def home(request):

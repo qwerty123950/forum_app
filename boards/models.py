@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+import hashlib
 
 class Board(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -32,3 +32,11 @@ class Post(models.Model):
     def __str__(self):   
         return f"{self.topic} -> {self.message}"
 
+class LongString(models.Model):
+    content = models.TextField(unique=True)
+    unique_id = models.CharField(max_length=10, unique=True)
+
+    def save(self, *args, **kwargs):
+        if not self.unique_id:
+            self.unique_id = hashlib.sha256(self.content.encode()).hexdigest()[:8]
+        super().save(*args, **kwargs)
