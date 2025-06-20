@@ -7,11 +7,11 @@
     <title>Forum Home</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% if user.is_authenticated %}
-        <p>
+        <h4>
             Welcome, {{ user.username }} | 
             <a href="{% url 'logout' %}">Logout | </a>
             <a href="{% url 'home_table' %}"> Switch to Table View</a>
-        </p>
+        </h4>
     {% else %}
         <a href="{% url 'login' %}">Login</a>
     {% endif %}

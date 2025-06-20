@@ -9,6 +9,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
+from django.db.models import Prefetch
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets, status, permissions
@@ -59,8 +60,8 @@ def delete_board(request, board_id):
 def board_success(request):
     return render(request, 'success.html')
 
+@login_required
 def new_topic(request, board_id):
-
     board = get_object_or_404(Board, pk=board_id)
 
     if request.method == 'POST':
@@ -68,15 +69,13 @@ def new_topic(request, board_id):
         if form.is_valid():
             topic = form.save(commit=False)
             topic.board = board
-
-            user = User.objects.first() 
-            topic.starter = user
+            topic.starter = request.user 
             topic.save()
 
             Post.objects.create(
                 message=form.cleaned_data.get('message'),
                 topic=topic,
-                created_by=user
+                created_by=request.user
             )
 
             return redirect('topic_success', board_id=board.pk)
@@ -86,22 +85,44 @@ def new_topic(request, board_id):
 
 def topic_success(request, board_id):
     board = get_object_or_404(Board, pk=board_id)
-    topics = board.topics.all()
-    return render(request, 'topic_success.html', {'board':board, 'topics':topics})
+    return render(request, 'topic_success.html', {'board': board})
 
 def list_topics(request, board_id):
     board = get_object_or_404(Board, pk=board_id)
     query = request.GET.get('q', '')
-    if query:
-        topics = board.topics.filter(subject__icontains=query).prefetch_related('posts')
-    else:
-        topics = board.topics.all().prefetch_related('posts')
+
+    topic_queryset = board.topics.filter(subject__icontains=query) if query else board.topics.all()
+
+    latest_posts = Post.objects.order_by('-created_at') 
+    topic_queryset = topic_queryset.prefetch_related(
+        Prefetch('posts', queryset=latest_posts, to_attr='latest_posts')
+    ).order_by('last_updated')
+
+    paginator = Paginator(topic_queryset, 5)
+    page_number = request.GET.get('page')
+    topic_list = paginator.get_page(page_number)
+
+    form = NewTopicForm()
 
     return render(request, 'list_topics.html', {
-        'board': board, 
-        'topics': topics,
+        'board': board,
+        'topics': topic_list,
+        'form': form,
         'query': query
-        })
+    })
+
+def topic_detail(request, topic_id):
+    topic = get_object_or_404(Topic, id=topic_id)
+    posts = topic.posts.all().order_by('created_at')
+
+    paginator = Paginator(posts, 3) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'topic_detail.html', {
+        'topic': topic,
+        'posts': page_obj,
+    })
 
 @csrf_exempt
 def update_vote(request):

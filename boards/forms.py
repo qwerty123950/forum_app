@@ -16,5 +16,5 @@ class NewTopicForm(forms.ModelForm):
 
     class Meta:
         model = Topic
-        fields = ['subject']
+        fields = ['subject', 'message']
 
